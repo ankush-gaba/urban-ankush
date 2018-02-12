@@ -21,7 +21,45 @@ namespace TestQueueService
         {
             InitializeComponent();
         }
+        /// <summary>
+        /// This function reads the message from the queue and writes the message of the queue to the log file.
+        /// </summary>
+        public void ReadQueue()
+        {
 
+            try
+            {
+                while (true)
+                {
+                    //Set the path to the message queue object. 
+                    MessageQueue mqQueue = new MessageQueue(ReadQueuePath);
+                    //Setting the message formatter as XmlMessageFormatter
+                    mqQueue.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
+                    //Message object for reading messages
+                    Message mMessage = mqQueue.Receive(new TimeSpan(0));
+                    IsQueueEmpty = false;
+                    if (!IsQueueEmpty)
+                    {
+                        //Writes the message to the log file.
+                        Library.WriteErrorLog("Message is:" + mMessage.Body.ToString());
+                    }
+
+                    //Checks after every 5 minutes.
+                    Thread.Sleep(300000);
+                }
+            }
+            catch (MessageQueueException ex)
+            {
+                if (ex.MessageQueueErrorCode == MessageQueueErrorCode.IOTimeout)
+                {
+                    IsQueueEmpty = true;
+                }
+                if (IsQueueEmpty)
+                {
+                    Library.WriteErrorLog("No message was in the queue");
+                }
+            }
+        }
         /// <summary>
         /// This function writes the message in the specified queue
         /// </summary>
