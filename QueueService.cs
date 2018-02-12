@@ -21,8 +21,7 @@ namespace TestQueueService
         {
             InitializeComponent();
         }
-       
-     
+
         /// <summary>
         /// This function writes the message in the specified queue
         /// </summary>
